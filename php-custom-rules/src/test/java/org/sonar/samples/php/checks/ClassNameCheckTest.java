@@ -26,11 +26,11 @@ import org.sonar.plugins.php.api.tests.PHPCheckVerifier;
 /**
  * Test class to test the check implementation.
  */
-class ForbiddenFunctionUseCheckTest {
+class ClassNameCheckTest {
 
   @Test
   void test() {
-    PHPCheckVerifier.verify(new ForbiddenFunctionUseCheck(), new File("src/test/resources/checks/forbiddenFunctionUseCheck.php"));
+    PHPCheckVerifier.verify(new ClassNameCheck(), new File("src/test/resources/checks/ClassNameCheck.php"));
   }
 
 }

@@ -19,14 +19,22 @@
  */
 package org.sonar.samples.php.checks;
 
-import java.util.Set;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
-import org.sonar.plugins.php.api.tree.Tree.Kind;
-import org.sonar.plugins.php.api.tree.declaration.NamespaceNameTree;
-import org.sonar.plugins.php.api.tree.expression.ExpressionTree;
-import org.sonar.plugins.php.api.tree.expression.FunctionCallTree;
+import org.sonar.plugins.php.api.cache.CacheContext;
+import org.sonar.plugins.php.api.tree.CompilationUnitTree;
+import org.sonar.plugins.php.api.tree.declaration.ClassDeclarationTree;
+import org.sonar.plugins.php.api.tree.expression.IdentifierTree;
+import org.sonar.plugins.php.api.tree.expression.VariableIdentifierTree;
 import org.sonar.plugins.php.api.visitors.PHPVisitorCheck;
+import org.sonar.plugins.php.api.visitors.PhpFile;
+import org.sonar.plugins.php.api.visitors.PhpInputFileContext;
+import java.io.File;
+import java.net.URI;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * Example of implementation of a check by extending {@link PHPVisitorCheck}.
@@ -38,33 +46,24 @@ import org.sonar.plugins.php.api.visitors.PHPVisitorCheck;
  * accessed through {@link PHPVisitorCheck#context()}.
  */
 @Rule(
-  key = ForbiddenFunctionUseCheck.KEY,
+  key = VariableNameCheck.KEY,
   priority = Priority.MAJOR,
-  name = "Forbidden function should not be used.",
-  tags = {"convention"}
-// Description can either be given in this annotation or through HTML name <ruleKey>.html located in package
-// src/resources/org/sonar/l10n/php/rules/<repositoryKey>
-// description = "<p>The following functions should not be used:</p> <ul><li>foo</li> <li>bar</li></ul>"
-)
-public class ForbiddenFunctionUseCheck extends PHPVisitorCheck {
+  name = "Variable must be start by lower case",
+  tags = {"convention"})
+public class VariableNameCheck extends PHPVisitorCheck {
 
-  private static final Set<String> FORBIDDEN_FUNCTIONS = Set.of("foo", "bar");
-  public static final String KEY = "S1";
+  public static final String KEY = "S2";
 
-  /**
-   * Overriding method visiting the call expression to create an issue
-   * each time a call to "foo()" or "bar()" is done.
-   */
   @Override
-  public void visitFunctionCall(FunctionCallTree tree) {
-    ExpressionTree callee = tree.callee();
+  public void visitVariableIdentifier(VariableIdentifierTree tree) {
+    String name = tree.text();
+    name = name.replace("$", "");
 
-    if (callee.is(Kind.NAMESPACE_NAME) && FORBIDDEN_FUNCTIONS.contains(((NamespaceNameTree) callee).qualifiedName())) {
-      context().newIssue(this, callee, "Remove the usage of this forbidden function.");
+    String firstLetter = Character.toString(name.charAt(0));
+    String toUpperCase = firstLetter.toUpperCase();
+    if (firstLetter == toUpperCase) {
+      context().newIssue(this, tree, "The variable name must be start by a lower case");
     }
-
-    // super method must be called in order to visit function call node's children
-    super.visitFunctionCall(tree);
+    super.visitVariableIdentifier(tree);
   }
-
 }

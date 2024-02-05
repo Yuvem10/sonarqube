@@ -17,21 +17,20 @@
  * along with this program; if not, write to the Free Software Foundation,
  * Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
-package org.sonar.samples.php;
+package org.sonar.samples.php.checks;
 
+import java.io.File;
 import org.junit.jupiter.api.Test;
-import org.sonar.api.server.rule.RulesDefinition;
+import org.sonar.plugins.php.api.tests.PHPCheckVerifier;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-
-class MyPhpRulesTest {
+/**
+ * Test class to test the check implementation.
+ */
+class VariableNameCheckTest {
 
   @Test
-  void rules() {
-    MyPhpRules rulesDefinition = new MyPhpRules();
-    RulesDefinition.Context context = new RulesDefinition.Context();
-    rulesDefinition.define(context);
-    RulesDefinition.Repository repository = context.repository("custom");
-    assertEquals(3, repository.rules().size());
+  void test() {
+    PHPCheckVerifier.verify(new VariableNameCheck(), new File("src/test/resources/checks/VariableNameCheck.php"));
   }
+
 }
