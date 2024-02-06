@@ -75,7 +75,7 @@ public class PhpDocCheck extends PHPVisitorCheck {
     final Matcher matcher = pattern.matcher(globalContext);
 
     if (!matcher.find()) {
-      context().newIssue(this, tree, "");
+      context().newIssue(this, tree, "This function must contain a phpdoc");
     }
 
     super.visitMethodDeclaration(tree);
